@@ -1,0 +1,57 @@
+SELECT 'historico_comunicacao_bico', count(*) FROM historico_comunicacao_bico WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'usuario', count(*) FROM usuario WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'troca_numerario', count(*) FROM troca_numerario WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'afericao', count(*) FROM afericao WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'alteracao_preco_combustivel', count(*) FROM alteracao_preco_combustivel WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'cliente', count(*) FROM cliente WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'alerta_comunicacao_bico', count(*) FROM alerta_comunicacao_bico WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'controle_emissao_documento', count(*) FROM controle_emissao_documento WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'aviso_usuario', count(*) FROM aviso_usuario WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'medicao_tanque_fisico', count(*) FROM medicao_tanque_fisico WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'movimento_numerario', count(*) FROM movimento_numerario WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'aviso_cliente', count(*) FROM aviso_cliente WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'abastecimento', count(*) FROM abastecimento WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'emitente_cheque', count(*) FROM emitente_cheque WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'endereco_cliente', count(*) FROM endereco_cliente WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'alteracao_preco_programado', count(*) FROM alteracao_preco_programado WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'arquivo_movimento_ecf', count(*) FROM arquivo_movimento_ecf WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'descontinuidade_encerrante', count(*) FROM descontinuidade_encerrante WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'sis_parametro', count(*) FROM sis_parametro WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'abastecimento_excluido', count(*) FROM abastecimento_excluido WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'contingencia_dfe', count(*) FROM contingencia_dfe WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'prevenda_transferencia', count(*) FROM prevenda_transferencia WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'deposito_automatico', count(*) FROM deposito_automatico WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'prevenda', count(*) FROM prevenda WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'reducao_z', count(*) FROM reducao_z WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'movimento_venda', count(*) FROM movimento_venda WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'ocorrencia_terminal', count(*) FROM ocorrencia_terminal WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'transferencia_responsavel_cheque', count(*) FROM transferencia_responsavel_cheque WHERE sincronizacao <> 'S' HAVING count(*) > 0
+union all
+SELECT 'venda', count(*) FROM venda WHERE sincronizacao <> 'S' HAVING count(*) > 0

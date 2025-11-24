@@ -1,0 +1,22 @@
+{
+    "CPF": null,
+    "CNPJ": "CNPJ DO TOMADOR",
+    "Comp": [
+        {
+            "vComp": "TOTAL MDFE",
+            "xComp": "Frete",
+            "tpComp": "04"
+        }
+    ],
+    "xNome": "RAZAO SOCIAL TOMADOR",
+    "vContrato": "TOTAL MDFE",
+    "indPag": "0",
+    "vAdiant": "0.00",
+    "tpAntecip": "0",
+    "infBanc": {
+        "codBanco": "000",
+        "codAgencia": "0000000000",
+        "CNPJIPEF": "00000000000000",
+        "PIX": "00"
+    }
+}

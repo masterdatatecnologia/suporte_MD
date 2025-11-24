@@ -1,0 +1,8 @@
+select (rv.valor_recebido / rv.quantidade_parcela) as valor_parcela, vc.data_cupom, fr.valor_minimo_parcela, fr.denominacao, rv.* 
+from venda_cf vc
+ inner join recebimento_venda_cf rv on rv.id_venda_cf = vc.id_venda_cf
+ inner join forma_recebimento fr on fr.id_forma_recebimento = rv.id_forma_recebimento
+where vc.data_cupom >= CURRENT_DATE
+and rv.quantidade_parcela > 1
+and (rv.valor_recebido / rv.quantidade_parcela) < fr.valor_minimo_parcela
+order by vc.data_cupom

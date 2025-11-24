@@ -1,0 +1,7 @@
+Host SMTP: porta587.com.br
+E-mail: petros@porta587.com.br
+Usuário: petros
+Senha: 825073a52
+Servidor de Entrada POP3 - Porta 110: porta587.com.br
+Servidor de Saída SMTP - Porta 587: porta587.com.br
+SEM SSL

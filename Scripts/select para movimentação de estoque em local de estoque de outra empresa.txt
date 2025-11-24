@@ -1,0 +1,11 @@
+SELECT me.id_movimento_estoque,
+me.id_empresa AS empresa_movimento_estoque,
+me.documento,
+me.id_local_estoque AS local_estoque_movimento,
+me.quantidade,
+me.valor,
+le.id_empresa AS empresa_local_estoque
+FROM movimento_estoque AS me
+INNER JOIN local_estoque AS le on me.id_local_estoque = le.id_local_estoque
+WHERE me.id_item in (2129158911, 2131393317)
+AND me.id_empresa <> le.id_empresa

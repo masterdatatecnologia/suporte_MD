@@ -1,0 +1,22 @@
+select v.id_venda_cf,
+v.guid_Venda_Cf,
+v.numero_cupom,
+iv.sequencia_item,
+cf.codigo,
+v.data_cupom
+FROM venda_cf as v
+   INNER JOIN item_venda_cf as iv on iv.id_venda_cf = v.id_Venda_cf
+  INNER JOIN cfop as cf on cf.id_cfop = iv.id_cfop
+  INNER JOIN movimento_venda_terminal as mv on mv.id_movimento_venda_terminal = v.id_movimento_venda_terminal
+WHERE v.data_cupom ::date BETWEEN '2022-12-29' AND '2022-12-29'
+AND mv.id_empresa = 1
+AND iv.cancelado = 'N'
+AND v.guid_venda_cf NOT IN (
+  SELECT nfs.guid_venda
+  FROM nota_fiscal_saida nfs
+    INNER JOIN item_nfs infs ON nfs.id_nota_fiscal_saida = infs.id_nota_fiscal_saida
+    INNER JOIN cfop as cf on cf.id_cfop = infs.id_cfop
+  WHERE nfs.id_empresa = 1
+  AND nfs.emissao::DATE BETWEEN '2022-12-29' AND '2022-12-29'
+  AND nfs.situacao = 1
+)

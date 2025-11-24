@@ -1,0 +1,10 @@
+UPDATE pacote_frente_caixa
+SET checksum = UPPER(MD5('' ||
+id_pacote_frente_caixa ||
+COALESCE(TO_CHAR(geracao, 'yyyy-MM-dd hh24:mi:ss'), '') || 
+pacote || 
+versao_leiaute || 
+COALESCE(TO_CHAR(envio, 'yyyy-MM-dd hh24:mi:ss'), '')|| 
+COALESCE(TO_CHAR(processamento, 'yyyy-MM-dd hh24:mi:ss'), '') || 
+COALESCE(TO_CHAR(cancelamento, 'yyyy-MM-dd hh24:mi:ss'), ''))) 
+WHERE id_pacote_frente_caixa = '843bf206-2efa-1518-1067-1cff1936a53c'

@@ -1,0 +1,19 @@
+--Saldo Disponível
+SELECT    cf.denominacao,
+        SUM(mf.valor_movimento * (CASE WHEN tmf.entrada_saida = 1 THEN 1 ELSE -1 END)) AS saldo_disponivel
+FROM    movimento_financeiro AS mf 
+        INNER JOIN tipo_movimento_financeiro AS tmf ON (tmf.id_tipo_movimento_financeiro = mf.id_tipo_movimento_financeiro)
+        INNER JOIN conta_financeira AS cf ON (cf.id_conta_financeira = mf.id_conta_financeira)
+WHERE    mf.data_movimento <= '20221031'
+GROUP BY cf.denominacao
+ORDER BY 1
+
+--Saldo Conciliado
+SELECT    cf.denominacao,
+        SUM(mf.valor_movimento * (CASE WHEN tmf.entrada_saida = 1 THEN 1 ELSE -1 END)) AS saldo_disponivel
+FROM    movimento_financeiro AS mf 
+        INNER JOIN tipo_movimento_financeiro AS tmf ON (tmf.id_tipo_movimento_financeiro = mf.id_tipo_movimento_financeiro)
+        INNER JOIN conta_financeira AS cf ON (cf.id_conta_financeira = mf.id_conta_financeira)
+WHERE    mf.data_conciliacao <= '20221031'
+GROUP BY cf.denominacao
+ORDER BY 1 

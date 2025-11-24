@@ -1,0 +1,58 @@
+Como corrigir o erro : Erro ao gravar abastecimento: Não foi possível capturar o abastecimento pois a data do abastecimento é maior que a data do último movimento de venda.
+Automação enviou um abastecimento com  data maior que a data do dia. 
+
+-PRIMEIRO PARA A SINCRONIZAÇÃO 
+
+-SEGUNDO MUDA A DATA DO MOVIMENTO PARA A DATA DA CAPTURA
+
+UPDATE movimento_venda 
+SET data_movimento = '2024-10-14' 
+WHERE id_movimento_venda = '28A37912C718427EBA888AB721A1B5A0'
+
+-REINICIA O SERVIÇOS DA AUTOMAÇÃO E ESPERA OS ABASTECIMENTO CAIR
+
+-DEPOIS MUDA DATA DOS ABASTECIMENTO 
+
+UPDATE abastecimento 
+SET data_abastecimento = data_captura 
+WHERE id_abastecimento IN ()
+
+-APLICA CHECKSUM
+
+ 
+/* INICIO SCRIPT CORRIGIR CHCECKSUM DO ABASTECIMENTO PRA TELA*/
+UPDATE    abastecimento AS a
+SET    checksum = UPPER(MD5(a.guid_abastecimento
+|| TO_CHAR(a.data_abastecimento, 'yyyyMMddhh24miss')
+|| a.id_bico_combustivel
+|| REPLACE(CAST(a.encerrante_inicial AS TEXT), '.', '') 
+|| REPLACE(CAST(a.encerrante AS TEXT), '.', '')
+|| CAST(a.situacao AS TEXT)
+|| REPLACE(CAST(a.quantidade AS TEXT), '.', '')
+|| REPLACE(CAST(a.preco AS TEXT), '.', '')
+|| TRIM(a.retorno_automacao)
+|| COALESCE(NULL, '')
+|| '90FF5985D57C42389D631AE4F25C026E'))
+WHERE     a.situacao IN(1,7)
+AND    a.checksum != UPPER(MD5(a.guid_abastecimento
+|| TO_CHAR(a.data_abastecimento, 'yyyyMMddhh24miss')
+|| a.id_bico_combustivel
+|| REPLACE(CAST(a.encerrante_inicial AS TEXT), '.', '') 
+|| REPLACE(CAST(a.encerrante AS TEXT), '.', '')
+|| CAST(a.situacao AS TEXT)
+|| REPLACE(CAST(a.quantidade AS TEXT), '.', '')
+|| REPLACE(CAST(a.preco AS TEXT), '.', '')
+|| TRIM(a.retorno_automacao)
+|| COALESCE(NULL, '')
+|| '90FF5985D57C42389D631AE4F25C026E'));
+/* FIM SCRIPT VOLTAR ABASTECIMENTO PRA TELA */
+
+POR FIM MUDA A DATA DO MOVIMENTO PARA A DATA DO DIA
+
+UPDATE movimento_venda 
+SET data_movimento = '2024-10-06' 
+WHERE id_movimento_venda = '28A37912C718427EBA888AB721A1B5A0'
+
+PODE VOLTAR A SINCRONIZAÇÃO 
+
+

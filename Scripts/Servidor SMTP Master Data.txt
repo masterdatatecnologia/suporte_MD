@@ -1,0 +1,5 @@
+Servidor SMTP:smtp.gmail.com
+Porta: 587
+Habilita SSL- Sim
+Email:atendimento.posto@masterdatanet.com.br
+Senha: odff ipsk dipy lrdi
