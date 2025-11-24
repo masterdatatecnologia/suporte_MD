@@ -1,0 +1,85 @@
+UPDATE item_venda SET cancelado = 'S' WHERE id_venda IN(7403911);
+
+
+UPDATE venda v SET 
+situacao = 4, 
+data_cancelamento = CURRENT_TIMESTAMP,
+motivo_cancelamento = 'venda presa em aberto',
+xml_nfce = NULL,
+mensagem_sefaz  = 'VENDA EM PROCESSO DE EMISSÃO',
+id_usuario_cancelamento = (SELECT id_usuario FROM movimento_venda as mv WHERE mv.id_movimento_venda = v.id_movimento_venda)
+WHERE id_venda in (7403911);
+
+
+--5º passo, rodar scripts
+/* INICIO SCRIPT CHECKSUM VENDA */
+UPDATE venda SET checksum = UPPER(MD5(CAST(tipo_venda AS TEXT)
+|| id_cliente
+|| COALESCE(numero_serie_ecf, '')
+|| numero_cupom
+|| TO_CHAR(data_cupom, 'yyyyMMddhh24miss') 
+|| numero_ccf 
+|| REPLACE(total_item::TEXT, '.', '') 
+|| REPLACE((desconto + desconto_ajuste + desconto_automatico + desconto_fidelidade)::TEXT, '.', '') 
+|| REPLACE((acrescimo + acrescimo_ajuste + acrescimo_automatico)::TEXT, '.', '')
+|| REPLACE(total_venda::TEXT, '.', '') 
+|| cliente_rodape
+|| cnpj_cpf_rodape
+|| (CASE WHEN situacao = 4 THEN 'S' ELSE 'N' END)
+|| chave_acesso_nfce
+|| numero_protocolo_nfce
+|| contingencia_offline
+|| '90FF5985D57C42389D631AE4F25C026E'))
+WHERE checksum != UPPER(MD5(CAST(tipo_venda AS TEXT)
+|| id_cliente
+|| COALESCE(numero_serie_ecf, '')
+|| numero_cupom
+|| TO_CHAR(data_cupom, 'yyyyMMddhh24miss') 
+|| numero_ccf 
+|| REPLACE(total_item::TEXT, '.', '') 
+|| REPLACE((desconto + desconto_ajuste + desconto_automatico + desconto_fidelidade)::TEXT, '.', '') 
+|| REPLACE((acrescimo + acrescimo_ajuste + acrescimo_automatico)::TEXT, '.', '')
+|| REPLACE(total_venda::TEXT, '.', '') 
+|| cliente_rodape
+|| cnpj_cpf_rodape
+|| (CASE WHEN situacao = 4 THEN 'S' ELSE 'N' END)
+|| chave_acesso_nfce
+|| numero_protocolo_nfce
+|| contingencia_offline
+|| '90FF5985D57C42389D631AE4F25C026E'));
+-- COMMIT;
+-- FIM SCRIPT CHECKSUM VENDA
+
+
+
+UPDATE abastecimento SET situacao = 7,id_movimento_venda = NULL, marcador = 'N' WHERE id_abastecimento IN(
+SELECT id_abastecimento FROM item_venda WHERE id_venda IN(7403911));
+
+-- INICIO SCRIPT CHECKSUM ABASTECIMENTO
+
+/* INICIO SCRIPT CORRIGIR CHCECKSUM DO ABASTECIMENTO PRA TELA*/
+UPDATE	abastecimento AS a
+SET	checksum = UPPER(MD5(a.guid_abastecimento
+|| TO_CHAR(a.data_abastecimento, 'yyyyMMddhh24miss')
+|| a.id_bico_combustivel
+|| REPLACE(CAST(a.encerrante_inicial AS TEXT), '.', '') 
+|| REPLACE(CAST(a.encerrante AS TEXT), '.', '')
+|| CAST(a.situacao AS TEXT)
+|| REPLACE(CAST(a.quantidade AS TEXT), '.', '')
+|| REPLACE(CAST(a.preco AS TEXT), '.', '')
+|| TRIM(a.retorno_automacao)
+|| COALESCE(NULL, '')
+|| '90FF5985D57C42389D631AE4F25C026E'))
+WHERE 	a.situacao IN(1,7)
+AND	a.checksum != UPPER(MD5(a.guid_abastecimento
+|| TO_CHAR(a.data_abastecimento, 'yyyyMMddhh24miss')
+|| a.id_bico_combustivel
+|| REPLACE(CAST(a.encerrante_inicial AS TEXT), '.', '') 
+|| REPLACE(CAST(a.encerrante AS TEXT), '.', '')
+|| CAST(a.situacao AS TEXT)
+|| REPLACE(CAST(a.quantidade AS TEXT), '.', '')
+|| REPLACE(CAST(a.preco AS TEXT), '.', '')
+|| TRIM(a.retorno_automacao)
+|| COALESCE(NULL, '')
+|| '90FF5985D57C42389D631AE4F25C026E'));
+/* FIM SCRIPT VOLTAR ABASTECIMENTO PRA TELA */

@@ -1,0 +1,97 @@
+WITH resul AS (
+	SELECT	r.nome_empresa,
+		r.codigo_item,
+		r.denominacao_item,
+		r.denominacao_categoria,
+		r.valor_comissao_venda,
+		r.comissao_item,
+		SUM(r.quantidade) AS quantidade_vendida,
+		SUM(r.total_item) AS total_item,
+		SUM(r.desconto) AS total_desconto,
+		SUM(r.acrescimo) AS total_acrescimo
+	FROM	(
+	SELECT	se.nome AS nome_empresa,
+		i.codigo AS codigo_item,
+		i.denominacao AS denominacao_item,
+		ci.denominacao AS denominacao_categoria,
+		ie.valor_comissao_venda,
+		CASE WHEN (ie.comissao_venda > 0) THEN ie.comissao_venda ELSE cie.comissao_venda END AS comissao_item,
+		iv.quantidade,
+		iv.total_item,
+		(iv.desconto_rateado + iv.desconto_ajuste_rateado + iv.desconto_automatico_rateado + iv.desconto_fidelidade_rateado + iv.desconto_financeiro) AS desconto,
+		(iv.acrescimo_rateado + iv.acrescimo_ajuste_rateado + iv.acrescimo_automatico_rateado + iv.acrescimo_financeiro) AS acrescimo
+	FROM	movimento_venda_terminal AS mvt
+		INNER JOIN venda_cf AS v ON (v.id_movimento_venda_terminal = mvt.id_movimento_venda_terminal)
+		INNER JOIN item_venda_cf AS iv ON (iv.id_venda_cf = v.id_venda_cf)
+		INNER JOIN item AS i ON (i.id_item = iv.id_item)
+		INNER JOIN item_empresa AS ie ON (ie.id_item = i.id_item AND ie.id_empresa = mvt.id_empresa)
+		INNER JOIN categoria_item_empresa AS cie ON (cie.id_categoria_item = i.id_categoria_item AND cie.id_empresa = mvt.id_empresa)
+		INNER JOIN categoria_item AS ci ON (ci.id_categoria_item = i.id_categoria_item)
+		INNER JOIN sis_empresa AS se ON (se.id_empresa = mvt.id_empresa)
+	WHERE	mvt.id_empresa IN (:IdEmpresaMultSlc)
+	AND	mvt.data_movimento BETWEEN :DataInicial AND :DataFinal
+	AND	iv.cancelado = 'N'
+	AND	v.cancelada = 'N'
+
+	UNION ALL
+
+	SELECT	se.nome AS nome_empresa,
+		i.codigo AS codigo_item,
+		i.denominacao AS denominacao_item,
+		ci.denominacao AS denominacao_categoria,
+		ie.valor_comissao_venda,
+		CASE WHEN (ie.comissao_venda > 0) THEN ie.comissao_venda ELSE cie.comissao_venda END AS comissao_item,
+		infs.quantidade,
+		(infs.total_item + infs.desconto) AS total_item,
+		infs.desconto,
+		0.00 AS acrescimo
+	FROM	nota_fiscal_saida AS nfs
+		INNER JOIN item_nfs AS infs ON (infs.id_nota_fiscal_saida = nfs.id_nota_fiscal_saida)
+		INNER JOIN item AS i ON (i.id_item = infs.id_item)
+		INNER JOIN item_empresa AS ie ON (ie.id_item = i.id_item AND ie.id_empresa = nfs.id_empresa)
+		INNER JOIN categoria_item_empresa AS cie ON (cie.id_categoria_item = i.id_categoria_item AND cie.id_empresa = nfs.id_empresa)
+		INNER JOIN categoria_item AS ci ON (ci.id_categoria_item = i.id_categoria_item)
+		INNER JOIN sis_empresa AS se ON (se.id_empresa = nfs.id_empresa)
+	WHERE	nfs.id_empresa IN (:IdEmpresaMultSlc)
+	AND	nfs.emissao BETWEEN :DataInicial AND :DataFinal
+	AND	nfs.situacao = 1 -- Confirmado
+	AND	EXISTS(SELECT 1 FROM cfop WHERE tipo_movimento_estoque != 4 AND gera_titulo_financeiro = 'S' AND id_tipo_movimento_estoque = 7 AND id_cfop = infs.id_cfop)
+	AND	EXISTS(SELECT 1 FROM movimento_estoque AS me1 INNER JOIN sis_referencia_registro AS rr1 ON (me1.id_movimento_estoque = rr1.id_chave_registro_b)
+			WHERE rr1.id_chave_registro_a = infs.id_item_nfs AND rr1.tipo_referencia = 'ref_1101_0411_movimento_estoque_nfs')
+	AND	infs.id_local_estoque IN (SELECT id_local_estoque FROM local_estoque WHERE tipo = 2)
+
+	UNION ALL
+
+	SELECT	se.nome AS nome_empresa,
+		i.codigo,
+		i.denominacao AS item,
+		ci.denominacao AS denominacao_categoria,
+		ie.valor_comissao_venda,
+		CASE WHEN (ie.comissao_venda > 0) THEN ie.comissao_venda ELSE cie.comissao_venda END AS comissao_item,
+		(infe.quantidade * -1) AS quantidade,
+		((infe.total_produto + infe.desconto) * -1) AS total_item,
+		(infe.desconto * -1) AS desconto,
+		0.00 AS acrescimo
+	FROM	nota_fiscal_entrada AS nfe
+		INNER JOIN item_nfe AS infe ON (infe.id_nota_fiscal_entrada = nfe.id_nota_fiscal_entrada)
+		INNER JOIN item AS i ON (i.id_item = infe.id_item)
+		INNER JOIN item_empresa AS ie ON (ie.id_item = i.id_item AND ie.id_empresa = nfe.id_empresa)
+		INNER JOIN categoria_item_empresa AS cie ON (cie.id_categoria_item = i.id_categoria_item AND cie.id_empresa = nfe.id_empresa)
+		INNER JOIN categoria_item AS ci ON (ci.id_categoria_item = i.id_categoria_item)
+		INNER JOIN sis_empresa AS se ON (se.id_empresa = nfe.id_empresa)
+	WHERE	nfe.id_empresa IN (:IdEmpresaMultSlc)
+	AND	nfe.emissao BETWEEN :DataInicial AND :DataFinal
+	AND	nfe.situacao = 1 -- Confirmado
+	AND	EXISTS(SELECT 1 FROM cfop WHERE tipo_movimento_estoque != 4 AND id_tipo_movimento_estoque = 3 AND id_cfop = infe.id_cfop)
+	AND	infe.id_movimento_estoque IS NOT NULL
+	AND	infe.id_local_estoque IN (SELECT id_local_estoque FROM local_estoque WHERE tipo = 2)
+	) AS r
+	GROUP BY 1,2,3,4,5,6
+	ORDER BY r.nome_empresa,
+		r.denominacao_categoria,
+		r.denominacao_item )
+
+SELECT	*
+FROM	resul
+WHERE	(((CASE WHEN(valor_comissao_venda > 0.00) THEN ROUND((valor_comissao_venda * quantidade_vendida) / (total_item - total_desconto + total_acrescimo) * 100.0, 2) ELSE comissao_item END) > 0)
+	OR ((CASE WHEN(valor_comissao_venda > 0.00) THEN ROUND(valor_comissao_venda * quantidade_vendida, 2) ELSE ROUND(((total_item - total_desconto + total_acrescimo) * comissao_item / 100), 2) END) > 0))

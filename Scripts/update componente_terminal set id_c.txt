@@ -1,0 +1,2 @@
+update componente_terminal set id_componente_categoria = 1
+where id_componente_terminal = '196cb6b0-4317-4a66-8788-fa29509e850a'

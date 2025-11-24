@@ -1,0 +1,11 @@
+select 'ALTER TABLE '  relname  ' ENABLE TRIGGER ALL;' from pg_class
+where relkind = 'r'
+and relnamespace = 2200
+order by relname;
+
+
+
+ALTER TABLE local_estoque DISABLE TRIGGER local_estoque_tbiu;
+ALTER TABLE local_estoque DISABLE TRIGGER local_estoque_tbu;
+ALTER TABLE local_estoque ENABLE TRIGGER local_estoque_tbiu;
+ALTER TABLE local_estoque ENABLE TRIGGER local_estoque_tbu; 

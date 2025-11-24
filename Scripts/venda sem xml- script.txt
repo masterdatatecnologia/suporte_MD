@@ -1,0 +1,1 @@
+select * from venda where situacao = 3 and xml_nfce is NULL and sincronizacao != 'S'

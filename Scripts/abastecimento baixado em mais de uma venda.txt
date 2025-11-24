@@ -1,0 +1,12 @@
+select a.id_abastecimento
+from abastecimento a
+inner join item_venda_cf iv on (iv.id_abastecimento = a.id_abastecimento)
+inner join venda_cf v on (v.id_venda_cf = iv.id_venda_cf)
+inner join movimento_venda_terminal mvt on(v.id_movimento_venda_terminal = mvt.id_movimento_venda_terminal)
+inner join sis_empresa se on(se.id_empresa = mvt.id_empresa)
+where cast (data_abastecimento as date) = '2023-01-01'
+and v.cancelada = 'N'
+and iv.cancelado = 'N'
+and se.id_empresa = 190642203
+group by a.id_abastecimento
+having count (a.id_abastecimento) > 1

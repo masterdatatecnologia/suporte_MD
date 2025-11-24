@@ -1,0 +1,32 @@
+UPDATE abastecimento 
+SET encerrante  = (encerrante_inicial + quantidade)
+WHERE id_abastecimento 
+IN (SELECT id_abastecimento FROM abastecimento 
+WHERE situacao IN(1,7)
+AND encerrante_inicial >= encerrante)
+
+
+UPDATE    abastecimento AS a
+SET    checksum = UPPER(MD5(a.guid_abastecimento
+|| TO_CHAR(a.data_abastecimento, 'yyyyMMddhh24miss')
+|| a.id_bico_combustivel
+|| REPLACE(CAST(a.encerrante_inicial AS TEXT), '.', '') 
+|| REPLACE(CAST(a.encerrante AS TEXT), '.', '')
+|| CAST(a.situacao AS TEXT)
+|| REPLACE(CAST(a.quantidade AS TEXT), '.', '')
+|| REPLACE(CAST(a.preco AS TEXT), '.', '')
+|| TRIM(a.retorno_automacao)
+|| COALESCE(NULL, '')
+|| '90FF5985D57C42389D631AE4F25C026E'))
+WHERE     a.situacao IN(1,7)
+AND    a.checksum != UPPER(MD5(a.guid_abastecimento
+|| TO_CHAR(a.data_abastecimento, 'yyyyMMddhh24miss')
+|| a.id_bico_combustivel
+|| REPLACE(CAST(a.encerrante_inicial AS TEXT), '.', '') 
+|| REPLACE(CAST(a.encerrante AS TEXT), '.', '')
+|| CAST(a.situacao AS TEXT)
+|| REPLACE(CAST(a.quantidade AS TEXT), '.', '')
+|| REPLACE(CAST(a.preco AS TEXT), '.', '')
+|| TRIM(a.retorno_automacao)
+|| COALESCE(NULL, '')
+|| '90FF5985D57C42389D631AE4F25C026E'));

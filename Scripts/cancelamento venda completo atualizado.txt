@@ -1,0 +1,61 @@
+UPDATE item_venda 
+SET cancelado = 'S' 
+WHERE id_venda in (3401149);
+
+UPDATE venda v SET 
+situacao = 4, 
+data_cancelamento = CURRENT_TIMESTAMP,
+motivo_cancelamento = 'venda presa em aberto',
+xml_nfce = NULL,
+mensagem_sefaz  = 'RETORNO SEFAZ: CHAVE CONSULTADA NA SEFAZ E NÃO ENCONTRADA',
+id_usuario_cancelamento = (SELECT id_usuario FROM movimento_venda as mv WHERE mv.id_movimento_venda = v.id_movimento_venda)
+WHERE id_venda in (3401149);
+
+
+UPDATE venda SET checksum = UPPER(MD5(CAST(tipo_venda AS TEXT)
+|| id_cliente
+|| COALESCE(numero_serie_ecf, '')
+|| numero_cupom
+|| TO_CHAR(data_cupom, 'yyyyMMddhh24miss') 
+|| numero_ccf 
+|| REPLACE(total_item::TEXT, '.', '') 
+|| REPLACE((desconto + desconto_ajuste + desconto_automatico + desconto_fidelidade)::TEXT, '.', '') 
+|| REPLACE((acrescimo + acrescimo_ajuste + acrescimo_automatico)::TEXT, '.', '')
+|| REPLACE(total_venda::TEXT, '.', '') 
+|| cliente_rodape
+|| cnpj_cpf_rodape
+|| (CASE WHEN situacao = 4 THEN 'S' ELSE 'N' END)
+|| chave_acesso_nfce
+|| numero_protocolo_nfce
+|| contingencia_offline
+|| '90FF5985D57C42389D631AE4F25C026E'))
+WHERE guid_venda in ('B4ADE3B7D3174994AC52B1CEC3B7B26E');
+
+
+UPDATE abastecimento SET situacao = 7, id_movimento_venda = NULL, marcador = 'N' WHERE id_abastecimento IN (13990723);
+
+
+UPDATE abastecimento AS a
+SET checksum = UPPER(MD5(a.guid_abastecimento
+|| TO_CHAR(a.data_abastecimento, 'yyyyMMddhh24miss')
+|| a.id_bico_combustivel
+|| REPLACE(CAST(a.encerrante_inicial AS TEXT), '.', '')
+|| REPLACE(CAST(a.encerrante AS TEXT), '.', '')
+|| CAST(a.situacao AS TEXT)
+|| REPLACE(CAST(a.quantidade AS TEXT), '.', '')
+|| REPLACE(CAST(a.preco AS TEXT), '.', '')
+|| TRIM(a.retorno_automacao)
+|| COALESCE(NULL, '')
+|| '90FF5985D57C42389D631AE4F25C026E'))
+WHERE a.id_abastecimento in (13990723)
+AND a.checksum != UPPER(MD5(a.guid_abastecimento
+|| TO_CHAR(a.data_abastecimento, 'yyyyMMddhh24miss')
+|| a.id_bico_combustivel
+|| REPLACE(CAST(a.encerrante_inicial AS TEXT), '.', '')
+|| REPLACE(CAST(a.encerrante AS TEXT), '.', '')
+|| CAST(a.situacao AS TEXT)
+|| REPLACE(CAST(a.quantidade AS TEXT), '.', '')
+|| REPLACE(CAST(a.preco AS TEXT), '.', '')
+|| TRIM(a.retorno_automacao)
+|| COALESCE(NULL, '')
+|| '90FF5985D57C42389D631AE4F25C026E'));

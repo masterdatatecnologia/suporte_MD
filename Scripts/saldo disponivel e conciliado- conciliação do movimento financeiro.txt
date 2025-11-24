@@ -1,0 +1,7 @@
+Saldo Disponível é a soma das entradas menos a soma das saídas até a data informada... e nesse caso é sempre considerado pela data do movimento. Ou seja, se eu lanço uma despesa bancária num sábado o saldo disponível já será afetado no sábado, pois o cálculo é pela data de movimento.
+O Saldo Conciliado considera a data de conciliação, ou seja, no exemplo acima, o lançamento que fiz no sábado só cai no extrato na segunda-feira e então o saldo conciliado só irá mudar na segunda-feira.
+Se você desconcilia alguma coisa que estava conciliada no dia 27/10 e reconcilia com data de 03/11 o que vc está dizendo é para tirar o lançamento do dia 27/10 e mudar para o dia 03/11
+a regra principal é que a data de conciliação nunca pode ser menor que a data do movimento.
+E data de trabalho não tem relação alguma
+Data de trabalho é só um atalho do sistema pra evitar que o usuário tenha que ficar digitando a data a todo momento.
+A Data de trabalho é uma sugestão que o sistema irá fazer para que o usuário não tenha que preencher os campos que solicitem uma data

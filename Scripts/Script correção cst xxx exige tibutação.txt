@@ -1,0 +1,16 @@
+ 
+
+select * from item where id_item = '6C4DC43C2460192F4D114D1238F1F0E2'
+
+
+UPDATE item_venda 
+SET id_tipo_tributacao_pis = 100248147, 
+id_tipo_tributacao_cofins = 100248148 
+WHERE id_item = '4D8952042689491CB3DAC7B4228A50BB'
+and id_tipo_tributacao_pis = 2 
+and id_tipo_tributacao_cofins = 496;
+
+
+
+UPDATE item_venda SET id_tipo_tributacao_pis = '28565761', id_tipo_tributacao_cofins = '28565718'
+where id_venda = 3714261

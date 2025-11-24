@@ -1,0 +1,3 @@
+INSERT INTO sis_parametro
+(id_parametro, descricao, tipo_valor, valor_alfanumerico, valor_numerico, valor_data_hora, valor_binario, valor_jsonb, tipo_parametro, sincronizacao)
+VALUES('id_forma_recebimento_recolha_automatica', 'Forma de recebimento da recolha autônoma', 1, '', 0.00000, NULL, NULL, NULL, 1, 'S');
