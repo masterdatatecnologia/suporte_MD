@@ -87,8 +87,10 @@ SELECT
     PQuantidade,                                                          -- quantidade
     rec.preco,                                                            -- preco
     ROUND(PQuantidade * rec.preco, 3),                                    -- total
-    rec.ultimo_encerrante_capturado,                                      -- encerrante
-    rec.ultimo_encerrante_capturado - PQuantidade,                        -- encerrante_inicial
+    CASE WHEN (rec.ultimo_encerrante_capturado IS NULL OR rec.ultimo_encerrante_capturado = 0) 
+		THEN 1000 ELSE rec.ultimo_encerrante_capturado END,                                      -- encerrante
+    CASE WHEN (rec.ultimo_encerrante_capturado IS NULL OR rec.ultimo_encerrante_capturado = 0)
+		THEN 1000 - PQuantidade ELSE rec.ultimo_encerrante_capturado - PQuantidade END,                        -- encerrante_inicial
     0,                                                                    -- duracao_abastecimento
     'GERADO MANUAL',                                                      -- retorno_automacao
     NULL,                                                                 -- id_atendente
@@ -134,6 +136,31 @@ WHERE NOT EXISTS (
     FROM public.abastecimento a 
     WHERE a.id_abastecimento = PIdAbastecimento
 );
+
+UPDATE	abastecimento AS a
+SET	checksum = UPPER(MD5(a.guid_abastecimento
+|| TO_CHAR(a.data_abastecimento, 'yyyyMMddhh24miss')
+|| a.id_bico_combustivel
+|| REPLACE(CAST(a.encerrante_inicial AS TEXT), '.', '') 
+|| REPLACE(CAST(a.encerrante AS TEXT), '.', '')
+|| CAST(a.situacao AS TEXT)
+|| REPLACE(CAST(a.quantidade AS TEXT), '.', '')
+|| REPLACE(CAST(a.preco AS TEXT), '.', '')
+|| TRIM(a.retorno_automacao)
+|| COALESCE(NULL, '')
+|| '90FF5985D57C42389D631AE4F25C026E'))
+WHERE	a.situacao NOT IN (2,3,4,5,6)
+AND	a.checksum != UPPER(MD5(a.guid_abastecimento
+|| TO_CHAR(a.data_abastecimento, 'yyyyMMddhh24miss')
+|| a.id_bico_combustivel
+|| REPLACE(CAST(a.encerrante_inicial AS TEXT), '.', '') 
+|| REPLACE(CAST(a.encerrante AS TEXT), '.', '')
+|| CAST(a.situacao AS TEXT)
+|| REPLACE(CAST(a.quantidade AS TEXT), '.', '')
+|| REPLACE(CAST(a.preco AS TEXT), '.', '')
+|| TRIM(a.retorno_automacao)
+|| COALESCE(NULL, '')
+|| '90FF5985D57C42389D631AE4F25C026E'));
 	END LOOP;
 	RETURN PIdAbastecimento;
  END;
