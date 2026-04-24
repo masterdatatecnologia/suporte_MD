@@ -32,7 +32,7 @@ UPDATE venda SET checksum = UPPER(MD5(CAST(tipo_venda AS TEXT)
 WHERE guid_venda in ('B4ADE3B7D3174994AC52B1CEC3B7B26E');
 
 
-UPDATE abastecimento SET situacao = 7, id_movimento_venda = NULL, marcador = 'N' WHERE id_abastecimento IN (13990723);
+UPDATE abastecimento SET situacao = 1, id_movimento_venda = NULL, marcador = 'N' WHERE id_abastecimento IN (13990723);
 
 
 UPDATE abastecimento AS a
